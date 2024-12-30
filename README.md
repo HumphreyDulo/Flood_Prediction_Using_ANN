@@ -54,11 +54,11 @@ echo "Run 'make run' to start the application."
 Also running the command: python app.py will work.
 
 ## Features****
--Predict flood probabilities for specific locations within Nairobi.
--Interactive map displaying safe zones within a 5km radius from selected location.
--Automated input data retrieval using APIs.
--Real-time flood risk calculations.
--Dynamic safe zone list display for easy navigation.
+- Predict flood probabilities for specific locations within Nairobi.
+- Interactive map displaying safe zones within a 5km radius from selected location.
+- Automated input data retrieval using APIs.
+- Real-time flood risk calculations.
+- Dynamic safe zone list display for easy navigation.
 
 ## Contact****
 For any questions, improvements or feedback, reach out:
