@@ -1,0 +1,8 @@
+Flask
+tensorflow
+joblib
+numpy
+pandas
+subprocess
+requests
+

@@ -1,0 +1,107 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* Ensuring full-page usage */
+html, body {
+    height: 100%;
+    background-color: #2b2b2b;
+    color: white;
+    font-family: Arial, sans-serif;
+}
+
+/* Main container */
+.container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+    padding: 20px;
+}
+
+/* Header styling */
+header {
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+header h1 {
+    font-size: 2rem;
+    color: #f8d57e;
+}
+
+/* Map container */
+#map {
+    height: 500px;
+    width: 100%;
+    border-radius: 10px;
+}
+
+.container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+}
+
+/* Info container for buttons and messages */
+#info-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-top: 20px;
+    width: 100%;
+}
+
+/* Button and messages */
+.styled-button {
+    padding: 10px 15px;
+    margin-top: 10px;
+    border: none;
+    border-radius: 5px;
+    background-color: #bfaff2;
+    color: #2b2b2b;
+    cursor: pointer;
+    font-size: 1rem;
+}
+
+.styled-button:hover {
+    background-color: #a69fd8;
+}
+
+#error-message {
+    color: #721c24;
+    background-color: #f8d7da;
+    padding: 15px;
+    margin-top: 10px;
+    font-size: 1.2rem;
+    display: none;
+}
+
+/* Flash messages */
+.flash-message {
+    padding: 10px;
+    margin-bottom: 10px;
+    border-radius: 5px;
+    font-weight: bold;
+}
+
+.flash-message.success {
+    background-color: #d4edda;
+    color: #155724;
+    border: 1px solid #c3e6cb;
+}
+
+.flash-message.error {
+    background-color: #f8d7da;
+    color: #721c24;
+    border: 1px solid #f5c6cb;
+}
+
+/* Adding specific style for export button */
+#exportButton {
+    margin-top: 20px;
+}

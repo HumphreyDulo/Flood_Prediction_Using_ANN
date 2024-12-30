@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Flood Prediction- Nairobi</title>
+    <!-- Include Leaflet CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin="" />
+    <!-- Link to custom styles -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+
+<body>
+    <!-- Main container for the page content -->
+    <div class="container">
+        <!-- Card for the main content -->
+        <div class="card">
+            <!-- Card Header -->
+            <div class="card-header">
+                <h2>Nairobi Flood Risk Prediction</h2>
+            </div>
+
+            <!-- Card Body -->
+            <div class="card-body">
+                <span class="text-info">Find out the likelihood of floods within Nairobi using the minimap</span>
+                
+                <!-- Flash Messages -->
+                {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                <div class="flash-messages">
+                    {% for category, message in messages %}
+                    <div class="flash-message {{ category }}">
+                        {{ message }}
+                    </div>
+                    {% endfor %}
+                </div>
+                {% endif %}
+                {% endwith %}
+
+
+                <!-- Search Bar and Map Container -->
+                <div class="map-container">
+                    <!-- Map -->
+                    <div id="map"></div>
+                    <div id="prediction-display" class="prediction-output">Flood Risk: </div>
+
+                    <!-- Search Bar and Location Buttons -->
+                    <div class="search-container">
+                        <input type="text" id="locationSearch" placeholder="Search for a location" class="search-bar">
+                        <button id="searchButton" class="styled-button">Search</button>
+                        <button id="currentLocationButton" class="styled-button">My Location</button>
+                        <div id="loading" style="display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 1000; background: rgba(255, 255, 255, 0.8); padding: 20px; border-radius: 10px;">
+                            <p>Loading...</p>
+                            <img src="/static/spinner.gif" alt="Loading">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Calculate Button -->
+                <button id="calculateButton" class="styled-button">Calculate</button>
+                <button id="safezonesButton" class="styled-button">View Safezones</button>
+            </div>
+
+        </div>
+    </div>
+
+    <div id="loading" style="display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 1000; background: rgba(255, 255, 255, 0.8); padding: 20px; border-radius: 10px;">
+        <p>Loading...</p>
+        <img src="/static/spinner.gif" alt="Loading">
+    </div>
+    
+
+    <!-- Include Leaflet JS -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
+
+    <!-- Link to custom JS -->
+    <script src="{{ url_for('static', filename='scripts.js') }}" defer></script>
+</body>
+
+</html>

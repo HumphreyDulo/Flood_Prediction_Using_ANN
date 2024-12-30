@@ -1,0 +1,28 @@
+# Byte-compiled Python files
+__pycache__/
+*.py[cod]
+
+# Virtual environment
+venv/
+
+# Dependency files
+*.egg-info/
+*.eggs/
+pip-log.txt
+
+# IDE files
+.vscode/
+.idea/
+
+# Operating system files
+.DS_Store
+Thumbs.db
+
+# Flask cache
+instance/
+.env
+*.sqlite3
+
+# Coverage and test files
+.coverage
+.pytest_cache/
