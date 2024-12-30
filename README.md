@@ -60,9 +60,6 @@ Automated input data retrieval using APIs.
 Real-time flood risk calculations.
 Dynamic safe zone list display for easy navigation.
 
-## APIs****
-
-
 ## Contact****
 For any questions, improvements or feedback, reach out:
 
