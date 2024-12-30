@@ -14,5 +14,5 @@ In addition, It can provide safezones from flood-prone areas within a 5KM radius
 ## Setup
 1. Clone the repository:
    ```bash
-   git clone <repository-url>
-   cd flood-prediction-app
+   git clone https://github.com/HumphreyDulo/Flood_Prediction_Using_ANN.git
+   cd Flood_Prediction_Using_ANN/app
