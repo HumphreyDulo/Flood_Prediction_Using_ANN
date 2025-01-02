@@ -26,21 +26,52 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // Safe Zones data (replace with API or dynamic data as needed)
     const safeZones = [
-        { lat: -1.250, lon: 36.820, name: "Safe Zone 1" },
-        { lat: -1.260, lon: 36.830, name: "Safe Zone 2" },
-        { lat: -1.270, lon: 36.840, name: "Safe Zone 3" }
+        { lat: -1.2989, lon: 36.8106, name: "Upper Hill" },
+        { lat: -1.2921, lon: 36.7863, name: "Kilimani" },
+        { lat: -1.2654, lon: 36.8057, name: "Westlands" },
+        { lat: -1.2826, lon: 36.7725, name: "Lavington" },
+        { lat: -1.2182, lon: 36.8126, name: "Runda" },
+        { lat: -1.2522, lon: 36.8261, name: "Muthaiga" },
+        { lat: -1.2372, lon: 36.8133, name: "Gigiri" },
+        { lat: -1.3141, lon: 36.7280, name: "Karen" },
+       
     ];
 
-    // Plot Safe Zones on the map
-    function plotSafeZones() {
+
+    // Function for reverse geocoding
+    async function reverseGeocode(lat, lon) {
+        const url = `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}`;
+        try {
+            const response = await fetch(url);
+            const data = await response.json();
+            return data.display_name || "Unknown Location";
+        } catch (error) {
+            console.error('Error reverse geocoding:', error);
+            return "Error fetching location";
+        }
+    }
+
+    // Plot Safe Zones on the map using circles
+    async function plotSafeZones() {
         const bounds = L.latLngBounds();
 
         if (safeZones.length > 0) {
-            safeZones.forEach(zone => {
-                const marker = L.marker([zone.lat, zone.lon]).addTo(map)
-                    .bindPopup(`Safe Zone: ${zone.name}`);
-                bounds.extend(marker.getLatLng());
-            });
+            for (const zone of safeZones) {
+                const address = await reverseGeocode(zone.lat, zone.lon); // Fetch location name dynamically
+
+                // Add a circle to represent the safe zone
+                const circle = L.circle([zone.lat, zone.lon], {
+                    color: 'green', // Circle border color
+                    fillColor: '#32CD32', // Circle fill color
+                    fillOpacity: 0.5, // Transparency
+                    radius: 1000 // Radius in meters
+                }).addTo(map);
+
+                // Bind a popup to the circle
+                circle.bindPopup(`Safe Zone: ${zone.name}<br>Location: ${address}`);
+
+                bounds.extend(circle.getLatLng());
+            }
 
             // Fit map view to include all Safe Zones
             map.fitBounds(bounds);
