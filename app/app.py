@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, jsonify
+from flask import Flask, render_template, request, jsonify, redirect, url_for, flash, session
 import subprocess
 import logging
 from services.weather_service import WeatherService
@@ -12,6 +12,10 @@ from services.rain_service import RainService
 import os
 import re
 import json
+from flask_sqlalchemy import SQLAlchemy
+from flask_login import LoginManager, UserMixin, login_user, login_required, logout_user, current_user
+from werkzeug.security import generate_password_hash, check_password_hash
+from flask_migrate import Migrate
 
 # Set environment variables
 os.environ['TF_ENABLE_ONEDNN_OPTS'] = '0'
@@ -19,6 +23,49 @@ os.environ['PYTHONIOENCODING'] = 'utf-8'
 
 # Initialize Flask app
 app = Flask(__name__)
+app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://root:dulo@localhost/flood_prediction'
+app.config['SECRET_KEY'] = 'Pred1ct10n'
+
+db = SQLAlchemy(app)
+migrate = Migrate(app, db)  # Set up migrations
+login_manager = LoginManager(app)
+@login_manager.user_loader
+def load_user(user_id):
+    return User.query.get(int(user_id))
+
+login_manager.login_view = "login"  # Define the login view
+
+# User model
+class User(db.Model, UserMixin):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(100), nullable=False)  # Add name field
+    email = db.Column(db.String(120), unique=True, nullable=False)  # Change username to email
+    password = db.Column(db.String(9999), nullable=False)
+
+# Prediction model
+class Prediction(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    temperature = db.Column(db.Float)
+    humidity = db.Column(db.Float)
+    pressure = db.Column(db.Float)
+    rain = db.Column(db.Float)
+    wind_speed = db.Column(db.Float)
+    cloudiness = db.Column(db.Float)
+    elevation = db.Column(db.Float)
+    employment_agriculture = db.Column(db.Float)
+    urban_population = db.Column(db.Float)
+    soil_moisture = db.Column(db.Float)
+    pop_density = db.Column(db.Float)
+    forested_area = db.Column(db.Float)
+    river_discharge = db.Column(db.Float)
+    cyclone_intensity = db.Column(db.Float)
+    daily_temperature = db.Column(db.Float)
+    deteriorating_infrastructure = db.Column(db.Float)
+    stability = db.Column(db.Float)
+    dams_quality = db.Column(db.Float)
+    wetland_loss = db.Column(db.Float)
+    ineffective_disaster_preparedness = db.Column(db.Float)
+    flood_probability = db.Column(db.Float)  # The prediction result
 
 # Initialize services
 weather_service = WeatherService()
@@ -33,19 +80,92 @@ rain_service = RainService()
 # Setup logging
 logging.basicConfig(level=logging.INFO)
 
-# Find Safe Zones Renderer
+@app.route('/')
+def home():
+    return render_template('home.html')
+
+# login
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    if request.method == 'POST':
+        email = request.form['email']
+        password = request.form['password']
+        user = User.query.filter_by(email=email).first()
+        
+        if user and check_password_hash(user.password, password):
+            session['id'] = user.id
+            session['name'] = user.name
+            flash('Login successful!', 'success')
+            return redirect(url_for('dashboard'))  # or wherever the user is redirected after login
+        else:
+            flash('Login Unsuccessful. Check email and/or password', 'danger')
+            
+    return render_template('login.html')
+
+from werkzeug.security import generate_password_hash
+
+@app.route('/register', methods=['GET', 'POST'])
+def register():
+    if request.method == 'POST':
+        name = request.form.get('name')
+        email = request.form.get('email')
+        password = request.form.get('password')
+        confirm_password = request.form.get('confirm_password')
+
+        # Check if passwords match
+        if password != confirm_password:
+            flash('Passwords do not match!', 'danger')
+            return redirect(url_for('register'))
+
+        # Hash the password
+        hashed_password = generate_password_hash(password, method='pbkdf2:sha256')
+
+        # Create new user
+        new_user = User(name=name, email=email, password=hashed_password)
+        db.session.add(new_user)
+        db.session.commit()
+        flash('Your account has been created!', 'success')
+        return redirect(url_for('login'))
+
+    return render_template('register.html')
+
+
+# Safezones renderer
 @app.route('/safezones')
 def safezones():
-    lat = request.args.get('lat', type=float)
-    lon = request.args.get('lon', type=float)
-    return render_template('safezones.html', lat=lat, lon=lon)
+    if 'id' in session:
+        user_id = session['id']
+        user_name = session['name']
+        # You can now use user_name and user_id in your template or logic
+        lat = request.args.get('lat', type=float)
+        lon = request.args.get('lon', type=float)
+        return render_template('safezones.html', lat=lat, lon=lon, name=user_name, id=user_id)
+    else:
+        flash('You need to log in first!', 'danger')
+        return redirect(url_for('login'))
 
-
-@app.route('/')
+# Predictions renderer
+@app.route('/dashboard')
 def dashboard():
-    return render_template('dashboard.html')
+    if 'id' in session:
+        user_id = session['id']
+        user_name = session['name']
+        # Use user_name and user_id as needed
+        return render_template('dashboard.html', name=user_name, id=user_id)
+    else:
+        flash('You need to log in first!', 'danger')
+        return redirect(url_for('login'))
+    
+@app.route('/logout')
+def logout():
+    session.pop('name', None)
+    session.pop('id', None)
+    flash('You have been logged out.', 'success')
+    return redirect(url_for('home'))
+
 
 @app.route('/flood-prediction', methods=['GET'])
+@login_required  # Ensure the user is logged in
 def flood_prediction():
     lat = request.args.get('lat')
     lng = request.args.get('lng')

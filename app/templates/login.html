@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css')}}"> <!-- Link to your CSS file -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script> <!-- Include jQuery -->
+    <style>
+        .alert {
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 5px;
+            display: none;
+        }
+        .alert-success {
+            background-color: #28a745;
+            color: white;
+        }
+        .alert-danger {
+            background-color: #dc3545;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Flash messages -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            <ul>
+                {% for category, message in messages %}
+                    <li class="alert alert-{{ category }}">{{ message }}</li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+        {% endwith %}
+
+        <!-- Login Form -->
+        <div class="card">
+            <div class="card-header">Login</div>
+            <div class="card-body">
+                <form method="POST" action="/login">
+                    <div class="form-group">
+                        <input
+                            type="email"
+                            name="email"
+                            class="search-bar"
+                            placeholder="Enter your email"
+                            required
+                            pattern="[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}" 
+                            title="Enter a valid email address"
+                        >
+                    </div>
+                    <div class="form-group">
+                        <input
+                            type="password"
+                            name="password"
+                            class="search-bar"
+                            placeholder="Enter your password"
+                            required
+                        >
+                    </div>
+                    <button type="submit" class="styled-button">Login</button>
+                </form>
+                <p class="text-info">
+                    Don't have an account? 
+                    <a href="{{url_for('register')}}" style="color: #bfaff2;">Register here</a>
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        $(document).ready(function() {
+            // Show flash messages and hide them after 3 seconds
+            $(".alert").fadeIn().delay(3000).fadeOut();
+        });
+    </script>
+</body>
+</html>

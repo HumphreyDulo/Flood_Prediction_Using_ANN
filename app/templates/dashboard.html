@@ -9,6 +9,7 @@
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin="" />
     <!-- Link to custom styles -->
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+
 </head>
 
 <body>
@@ -19,12 +20,25 @@
             <!-- Card Header -->
             <div class="card-header">
                 <h2>Nairobi Flood Risk Prediction</h2>
+                <!-- Display the session name with a dropdown -->
+                {% if session['name'] %}
+                <div class="dropdown-container">
+                    <div class="dropdown">
+                        {{ session['name'] }} <span>&#9662;</span>
+                        <div class="dropdown-content">
+                            <a href="{{ url_for('logout') }}" class="logout-btn">Logout</a>
+                        </div>
+                    </div>
+                </div>
+                {% else %}
+                <p>Welcome, Guest!</p>
+                {% endif %}
             </div>
 
             <!-- Card Body -->
             <div class="card-body">
                 <span class="text-info">Find out the likelihood of floods within Nairobi using the minimap</span>
-                
+
                 <!-- Flash Messages -->
                 {% with messages = get_flashed_messages(with_categories=true) %}
                 {% if messages %}
@@ -35,6 +49,17 @@
                     </div>
                     {% endfor %}
                 </div>
+                <script>
+                    // Wait for the page to load and then hide the flash message after 1 second
+                    window.addEventListener('DOMContentLoaded', (event) => {
+                        setTimeout(() => {
+                            const flashMessages = document.querySelector('.flash-messages');
+                            if (flashMessages) {
+                                flashMessages.style.display = 'none';
+                            }
+                        }, 1000); // Delay for 1 second (1000ms)
+                    });
+                </script>
                 {% endif %}
                 {% endwith %}
 
@@ -50,7 +75,8 @@
                         <input type="text" id="locationSearch" placeholder="Search for a location" class="search-bar">
                         <button id="searchButton" class="styled-button">Search</button>
                         <button id="currentLocationButton" class="styled-button">My Location</button>
-                        <div id="loading" style="display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 1000; background: rgba(255, 255, 255, 0.8); padding: 20px; border-radius: 10px;">
+                        <div id="loading"
+                            style="display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 1000; background: rgba(255, 255, 255, 0.8); padding: 20px; border-radius: 10px;">
                             <p>Loading...</p>
                             <img src="/static/spinner.gif" alt="Loading">
                         </div>
@@ -61,15 +87,15 @@
                 <button id="calculateButton" class="styled-button">Calculate</button>
                 <button id="safezonesButton" class="styled-button">View Safezones</button>
             </div>
-
         </div>
     </div>
 
-    <div id="loading" style="display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 1000; background: rgba(255, 255, 255, 0.8); padding: 20px; border-radius: 10px;">
+    <!-- Loading Spinner -->
+    <div id="loading"
+        style="display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 1000; background: rgba(255, 255, 255, 0.8); padding: 20px; border-radius: 10px;">
         <p>Loading...</p>
         <img src="/static/spinner.gif" alt="Loading">
     </div>
-    
 
     <!-- Include Leaflet JS -->
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>

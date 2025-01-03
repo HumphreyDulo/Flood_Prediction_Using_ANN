@@ -12,49 +12,51 @@
 </head>
 
 <body>
-    <!-- Main container for the page content -->
     <div class="container">
-        <!-- Card for the main content -->
         <div class="card">
-            <!-- Card Header -->
             <div class="card-header">
                 <h2>Safe Zones in Nairobi</h2>
+                {% if session['name'] %}
+                <div class="dropdown-container">
+                    <div class="dropdown">
+                         {{ session['name'] }} <span>&#9662;</span>
+                        <div class="dropdown-content">
+                            <a href="{{ url_for('logout') }}" class="logout-btn">Logout</a>
+                        </div>
+                    </div>
+                </div>
+                {% else %}
+                <p>Welcome, Guest!</p>
+                {% endif %}
             </div>
 
-            <!-- Card Body -->
             <div class="card-body">
                 <span class="text-info">
                   The zones below are considered safer from flooding in Nairobi.
                 </span>
 
-                <!-- Flash Messages -->
                 {% with messages = get_flashed_messages(with_categories=true) %}
                 {% if messages %}
-                <div class="flash-messages">
-                    {% for category, message in messages %}
-                    <div class="flash-message {{ category }}">
-                        {{ message }}
+                    <div class="flash-messages">
+                        {% for category, message in messages %}
+                        <div class="flash-message {{ category }}">
+                            {{ message }}
+                        </div>
+                        {% endfor %}
                     </div>
-                    {% endfor %}
-                </div>
                 {% endif %}
                 {% endwith %}
 
-                <!-- Map Container -->
                 <div class="map-container">
-                    <!-- Map -->
                     <div id="map"></div>
                     <div id="safezones-output" class="safezones-output"></div>
                 </div>
 
-                <!-- Buttons -->
                 <div class="button-container">
                     <button id="backButton" class="styled-button">Back</button>
-                   <!-- <button id="exportButton" class="styled-button">Export Safe Zones</button> -->
                 </div>
 
-                <!-- Loading Indicator -->
-                <div id="loading" style="display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 1000; background: rgba(255, 255, 255, 0.8); padding: 20px; border-radius: 10px;">
+                <div id="loading" style="display: none;">
                     <p>Loading...</p>
                     <img src="/static/spinner.gif" alt="Loading">
                 </div>
@@ -62,10 +64,7 @@
         </div>
     </div>
 
-    <!-- Include Leaflet JS -->
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
-
-    <!-- Link to custom JS -->
     <script src="{{ url_for('static', filename='scripts2.js') }}" defer></script>
 </body>
 

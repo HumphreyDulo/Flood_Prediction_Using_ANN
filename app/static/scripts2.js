@@ -88,12 +88,6 @@ document.addEventListener('DOMContentLoaded', function () {
     // Event Listener for the "Back" button
     document.getElementById('backButton').addEventListener('click', function () {
         console.log('Back button clicked.');
-        window.location.href = '/'; // Navigate back to the main page
-    });
-
-    // Export functionality
-    document.getElementById('exportButton').addEventListener('click', function () {
-        console.log('Export button clicked.');
-        alert('Export functionality is not implemented yet.');
+        window.location.href = '/dashboard'; // Navigate back to the main page
     });
 });

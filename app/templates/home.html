@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nairobi Flood Prediction</title>
+    <style>
+        @media only screen and (min-width: 501px) {
+            body {
+                font-family: Arial, sans-serif;
+                background-color: #2b2b2b;
+                color: white;
+                margin: 0;
+            }
+
+            .topbar {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                padding: 10px 50px;
+                background-color: #0000;
+            }
+
+            .logo h {
+                display: block;
+                font-size: 2em;
+                margin-block-start: 0.67em;
+                margin-block-end: 0.67em;
+                margin-inline-start: 0px;
+                margin-inline-end: 0px;
+                font-weight: bold;
+                unicode-bidi: isolate;
+            }
+
+            .auth {
+                display: flex;
+                gap: 20px;
+            }
+
+            .auth a {
+                text-decoration: none;
+                color: white;
+            }
+
+            .auth button {
+                padding: 10px 20px;
+                border: none;
+                border-radius: 5px;
+                cursor: pointer;
+            }
+
+            .signup {
+                background-color: #bfaff2;
+                color: #575365;
+            }
+
+            .getstarted {
+                font-family: poppins;
+                padding: 12px 40px;
+                border: 0px;
+                border-radius: 14px;
+                background-color: #f8d57e;
+            }
+
+            .welcome {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                max-width: 1200px;
+                margin: 50px auto;
+                padding: 20px;
+            }
+
+            .words {
+                flex: 1;
+                margin-right: 20px;
+            }
+
+            .words h1 {
+                font-size: 67px;
+                margin-bottom: 20px;
+            }
+
+            .words p {
+                font-size: 18px;
+                color: grey;
+                margin-bottom: 20px;
+            }
+
+            .picture1 {
+                flex: 1;
+            }
+
+            .picture1 iframe {
+                width: 100%;
+                height: 300px;
+                border-radius: 20px
+            }
+
+            .strip {
+                width: 1280px;
+                margin-left: 100px;
+            }
+
+            .strip img {
+                width: 1280px;
+            }
+        }
+
+        @media only screen and (max-width: 500px) {
+            body {
+                font-family: Arial, sans-serif;
+                background-color: #2b2b2b;
+                color: white;
+                margin: 0;
+            }
+
+            .topbar {
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                padding: 10px;
+                background-color: #0000
+            }
+
+            .logo {
+                font-size: 18px;
+                margin-bottom: 10px;
+            }
+
+            .auth {
+                display: flex;
+                gap: 10px;
+            }
+
+            .auth button {
+                font-size: 12px;
+                padding: 5px 10px;
+            }
+
+            .welcome {
+                flex-direction: column;
+                align-items: center;
+                padding: 20px;
+            }
+
+            .words {
+                text-align: center;
+                margin-bottom: 20px;
+            }
+
+            .words h1 {
+                font-size: 24px;
+            }
+
+            .words p {
+                font-size: 14px;
+            }
+
+            .picture1 iframe {
+                width: 100%;
+                height: 200px;
+                border-radius: 20px
+            }
+
+            .strip {
+                width: 500px;
+                margin-left: -5px;
+            }
+
+            .strip img {
+                width: 50px;
+            }
+
+        }
+    </style>
+</head>
+
+<body>
+    <div class="topbar">
+        <div class="logo">
+            <h1>Nairobi Flood Prediction</h1>
+        </div>
+        <div class="auth">
+            <a href="{{url_for('register')}}">
+                <button class="signup">Sign Up</button>
+            </a>
+            <a href="{{url_for('login')}}">
+                <button class="signup">Log In</button>
+            </a>
+        </div>
+    </div>
+
+    <div class="welcome">
+        <div class="words">
+            <h1>View Flood Predictions in Kenya</h1>
+            <p>Check your location to discover the level of risk.</p>
+            <a href="{{url_for('register')}}">
+                <button class="getstarted">Get Started</button>
+            </a>
+        </div>
+        <div class="picture1">
+            <iframe
+                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d15977.900365396263!2d36.817223!3d-1.286389!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x182f12fd8d9a9c67%3A0x503c1b1aa0e3a5e1!2sNairobi!5e0!3m2!1sen!2suk!4v1632160284886!5m2!1sen!2suk"
+                allowfullscreen></iframe>
+            <p>&copy; <a href="https://www.google.com/intl/en_US/help/terms_maps.html" target="_blank">Google</a></p>
+        </div>
+    </div>
+
+    <div class="strip">
+        <img src="/static/strip.png">
+    </div>
+
+</body>
+
+</html>
