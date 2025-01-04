@@ -41,6 +41,8 @@ class User(db.Model, UserMixin):
     name = db.Column(db.String(100), nullable=False)  # Add name field
     email = db.Column(db.String(120), unique=True, nullable=False)  # Change username to email
     password = db.Column(db.String(9999), nullable=False)
+    is_active = db.Column(db.Boolean, default=False)  # Account activation status
+    activation_token = db.Column(db.String(200), nullable=True)  # Activation token
 
 # Prediction model
 class Prediction(db.Model):
@@ -80,6 +82,47 @@ rain_service = RainService()
 # Setup logging
 logging.basicConfig(level=logging.INFO)
 
+from flask_mail import Mail, Message
+
+# Flask-Mail configuration
+app.config['MAIL_SERVER'] = 'smtp.gmail.com'
+app.config['MAIL_PORT'] = 587
+app.config['MAIL_USE_TLS'] = True
+app.config['MAIL_USE_SSL'] = False
+app.config['MAIL_USERNAME'] = 'humphrey.dulo@strathmore.edu'  # Replace with your Gmail address
+app.config['MAIL_PASSWORD'] = 'nxza jzxm zrrl yrte'     # Replace with your App Password
+app.config['MAIL_DEFAULT_SENDER'] = 'humphrey.dulo@strathmore.edu'
+
+mail = Mail(app)
+
+
+# URLSafeTimedSerializer for token generation
+@app.route('/activate/<token>', methods=['GET'])
+def activate_account(token):
+    serializer = URLSafeTimedSerializer(app.config['SECRET_KEY'])
+    try:
+        email = serializer.loads(token, salt='email-activation', max_age=86400)  # Token valid for 24 hours
+        user = User.query.filter_by(email=email).first()
+
+        if user and not user.is_active:
+            user.is_active = True
+            user.activation_token = None  # Invalidate the token
+            db.session.commit()
+            flash('Account activated successfully! You can now log in.', 'success')
+            return redirect(url_for('login'))
+        elif user and user.is_active:
+            flash('Account already activated.', 'info')
+            return redirect(url_for('login'))
+        else:
+            flash('Invalid activation link.', 'danger')
+            return redirect(url_for('home'))
+
+    except Exception as e:
+        flash('Activation link is invalid or has expired.', 'danger')
+        return redirect(url_for('home'))
+
+
+
 @app.route('/')
 def home():
     return render_template('home.html')
@@ -91,18 +134,30 @@ def login():
         email = request.form['email']
         password = request.form['password']
         user = User.query.filter_by(email=email).first()
-        
+
         if user and check_password_hash(user.password, password):
+            if not user.is_active:
+                flash('Please activate your account before logging in.', 'warning')
+                return redirect(url_for('login'))
+
             session['id'] = user.id
             session['name'] = user.name
             flash('Login successful!', 'success')
-            return redirect(url_for('dashboard'))  # or wherever the user is redirected after login
+            return redirect(url_for('dashboard'))
         else:
-            flash('Login Unsuccessful. Check email and/or password', 'danger')
-            
+            flash('Login unsuccessful. Check email and/or password.', 'danger')
+
     return render_template('login.html')
 
+
 from werkzeug.security import generate_password_hash
+
+from itsdangerous import URLSafeTimedSerializer
+
+# Generate activation token
+def generate_activation_token(email):
+    serializer = URLSafeTimedSerializer(app.config['SECRET_KEY'])
+    return serializer.dumps(email, salt='email-activation')
 
 @app.route('/register', methods=['GET', 'POST'])
 def register():
@@ -120,14 +175,53 @@ def register():
         # Hash the password
         hashed_password = generate_password_hash(password, method='pbkdf2:sha256')
 
-        # Create new user
-        new_user = User(name=name, email=email, password=hashed_password)
+        # Create new user (inactive initially)
+        new_user = User(name=name, email=email, password=hashed_password, is_active=False)
         db.session.add(new_user)
         db.session.commit()
-        flash('Your account has been created!', 'success')
+
+        # Generate an activation link
+        token = generate_activation_token(new_user.email)  # You can implement a token generator
+        activation_link = f"{request.host_url}activate/{token}"
+
+        # Send activation email
+        send_activation_email(email, activation_link)
+
+        flash('Your account has been created! Check your email to activate your account.', 'success')
         return redirect(url_for('login'))
 
     return render_template('register.html')
+
+
+from flask_mail import Message
+
+def send_activation_email(email, activation_link):
+    subject = "Activate Your Account"
+    body = f"""
+    Thank you for signing with us!
+    
+    Please activate your account by clicking the following link:
+    {activation_link}
+    
+    If you did not register for this account, you can safely ignore this email.
+
+    Regards,
+    The Team
+    """
+
+    # Create a message object
+    msg = Message(subject=subject,
+                  recipients=[email],
+                  body=body,
+                  sender=("Nairobi Flood Prediction", app.config['MAIL_USERNAME']))  # Set sender name and email
+
+    try:
+        # Send the email using Flask-Mail
+        mail.send(msg)
+        print(f"Activation email sent to {email}.")
+    except Exception as e:
+        print(f"Failed to send email. Error: {e}")
+
 
 
 # Safezones renderer
@@ -165,7 +259,7 @@ def logout():
 
 
 @app.route('/flood-prediction', methods=['GET'])
-@login_required  # Ensure the user is logged in
+
 def flood_prediction():
     lat = request.args.get('lat')
     lng = request.args.get('lng')
@@ -238,7 +332,36 @@ def flood_prediction():
                     # Parse the cleaned JSON
                     prediction_data = json.loads(cleaned_json)
                     prediction = prediction_data['prediction']
+
+                    # Save the features and the prediction result into the database
+                    new_prediction = Prediction(
+                        temperature=features[0],
+                        humidity=features[1],
+                        pressure=features[2],
+                        rain=features[3],
+                        wind_speed=features[4],
+                        cloudiness=features[5],
+                        elevation=features[6],
+                        employment_agriculture=features[7],
+                        urban_population=features[8],
+                        soil_moisture=features[9],
+                        pop_density=features[10],
+                        forested_area=features[11],
+                        river_discharge=features[12],
+                        cyclone_intensity=features[13],
+                        daily_temperature=features[14],
+                        deteriorating_infrastructure=features[15],
+                        stability=features[16],
+                        dams_quality=features[17],
+                        wetland_loss=features[18],
+                        ineffective_disaster_preparedness=features[19],
+                        flood_probability=prediction  # The prediction result
+                    )
+                    db.session.add(new_prediction)
+                    db.session.commit()
+                    logging.info("Prediction and features successfully saved to the database.")
                     return jsonify({'prediction': prediction})
+
                 except json.JSONDecodeError:
                     logging.error(f"Error parsing JSON: {cleaned_json}")
                     return jsonify({'error': "Error parsing prediction result from predict.py"})
@@ -248,7 +371,6 @@ def flood_prediction():
 
         except Exception as e:
             return jsonify({'error': str(e)})
-
     else:
         return jsonify({'error': "Invalid coordinates provided."})
 
@@ -300,11 +422,11 @@ def extract_features(weather_data, rain_data, elevation, soil_moisture, river_di
         'river_discharge': river_discharge[0] / 10 if river_discharge else 0,
         'cyclone_intensity': cyclone_intensity,
         'daily_temperature': daily_temperature / 10,
-        'deteriorating_infrastructure': 0,  # Placeholder or fetch if available
-        'stability': 0,  # Placeholder or fetch if available
-        'dams_quality': 0,  # Placeholder or fetch if available
-        'wetland_loss': 0,  # Placeholder or fetch if available
-        'ineffective_disaster_preparedness': 0,  # Placeholder or fetch if available
+        'deteriorating_infrastructure': 3,  # Placeholder or fetch if available
+        'stability': 3,  # Placeholder or fetch if available
+        'dams_quality': 3,  # Placeholder or fetch if available
+        'wetland_loss': 4,  # Placeholder or fetch if available
+        'ineffective_disaster_preparedness': 4,  # Placeholder or fetch if available
     }
 
     # Return the features to be passed to the model
