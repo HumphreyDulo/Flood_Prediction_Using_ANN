@@ -85,3 +85,28 @@ html, body {
     font-size: 1rem;
     margin-top: 15px;
 }
+
+    .alert {
+        padding: 10px;
+        margin-bottom: 10px;
+        border-radius: 5px;
+        font-size: 14px;
+        color: white;
+        text-align: center;
+    }
+
+    .alert-success {
+        background-color: #4CAF50; /* Green for success */
+    }
+
+    .alert-danger {
+        background-color: #f44336; /* Red for danger */
+    }
+
+    .alert-info {
+        background-color: #2196F3; /* Blue for info */
+    }
+
+    .alert-warning {
+        background-color: #ff9800; /* Orange for warning */
+    }

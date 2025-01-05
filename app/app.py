@@ -167,6 +167,12 @@ def register():
         password = request.form.get('password')
         confirm_password = request.form.get('confirm_password')
 
+        # Check if the email already exists
+        existing_user = User.query.filter_by(email=email).first()
+        if existing_user:
+            flash('An account with this email already exists!', 'danger')
+            return redirect(url_for('register'))
+
         # Check if passwords match
         if password != confirm_password:
             flash('Passwords do not match!', 'danger')
