@@ -142,7 +142,7 @@ def login():
 
             session['id'] = user.id
             session['name'] = user.name
-            flash('Login successful!', 'success')
+            flash('Login successful! DISCLAIMER: We do NOT record user locations.', 'success')
             return redirect(url_for('dashboard'))
         else:
             flash('Login unsuccessful. Check email and/or password.', 'danger')

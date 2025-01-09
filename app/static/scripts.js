@@ -10,7 +10,7 @@ document.addEventListener('DOMContentLoaded', function () {
         attribution: '&copy; OpenStreetMap'
     }).addTo(map);
 
-    // Loosened bounding box for Nairobi
+    // Nairobi bounds for validation. Change these to support the regions of your choosing
     const nairobiBounds = {
         latMin: -1.4443333,
         latMax: -1.191639,

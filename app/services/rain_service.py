@@ -3,7 +3,7 @@ import logging
 
 class RainService:
     def __init__(self):
-        self.api_key = '5b549f08ad5e455f88d130358242812'  # Your WeatherAPI key
+        self.api_key = 'b9df066214c147f68c1110214250901'  # Your WeatherAPI key
 
     def get_rain_data(self, latitude: float, longitude: float) -> float:
         url = f"https://api.weatherapi.com/v1/current.json?key={self.api_key}&q={latitude},{longitude}"
